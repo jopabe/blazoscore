@@ -1,0 +1,22 @@
+﻿<form onsubmit="return false">
+    <input @bind="PlayerName" />
+    &nbsp;
+    <button class="btn btn-primary" @onclick="Confirm" type="submit">
+        <span class="oi oi-check"></span> Confirm
+    </button>
+    <button class="btn btn-danger" @onclick="Cancel" type="reset">
+        <span class="oi oi-x"></span> Cancel
+    </button>
+</form>
+
+@code {
+#nullable disable warnings
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+#nullable restore warnings
+
+    [Parameter]
+    public string? PlayerName { get; set; }
+
+    Task Confirm() => BlazoredModal.CloseAsync(ModalResult.Ok(PlayerName));
+    Task Cancel() => BlazoredModal.CancelAsync();
+}

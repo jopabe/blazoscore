@@ -1,0 +1,73 @@
+﻿<div class="flex-fill" style="border: 2px solid red;">
+    <div class="position-relative top-50 start-50 translate-middle text-center">
+        <h3>@PlayerState.Player.Name
+            <small>
+                <span class="oi oi-pencil" @onclick="RenamePlayer"></span>
+                <span class="oi oi-x" @onclick="RemovePlayer"></span>
+            </small>
+        </h3>
+        <h2>@PlayerState.Scores.Sum()</h2>
+        <p>
+            @if (PlayerState.Scores[0] > 0)
+            {
+                <i>PlayerState.Scores[0]</i>
+            }
+            @foreach (var score in PlayerState.Scores.Skip(1))
+            {
+                if (score >= 0)
+                {
+                    <span> + @score</span>
+                }
+                else
+                {
+                    <span> - @(0 - score)</span>
+                }
+            }
+        </p>
+        <button type="button" class="btn btn-primary" @onclick="() => AddScore()">Add Score</button>
+        <button type="button" class="btn btn-info" @onclick="() => AddZero()">Add Zero</button>
+        <button type="button" class="btn btn-danger" @onclick="() => RemoveLastScore()">Remove Last Score</button>
+    </div>
+</div>
+
+@code {
+    #nullable disable warnings
+    [CascadingParameter] public Game Game { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+    #nullable restore warnings
+
+    [Parameter]
+    public PlayerState? PlayerStateParameter { get; set; }
+    public PlayerState PlayerState => PlayerStateParameter!;
+
+    private async Task AddScore()
+    {
+        var result = await Modal.Show<EnterScore>("Add score").Result;
+        if (result.Cancelled) return;
+        if (result.Data is not int score) return;
+
+        Game.UpdatePlayerState(PlayerState.AddScore(score));
+    }
+    private void AddZero()
+    {
+        Game.UpdatePlayerState(PlayerState.AddZero());
+    }
+    private void RemoveLastScore()
+    {
+        Game.UpdatePlayerState(PlayerState.RemoveLastScore());
+    }
+    async Task RenamePlayer()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(NamePlayer.PlayerName), PlayerState.Player.Name);
+        var result = await Modal.Show<NamePlayer>("Rename player", parameters).Result;
+        if (result.Cancelled) return;
+        var name = result.Data as string;
+        if (string.IsNullOrEmpty(name)) return;
+        Game.RenamePlayer(PlayerState.Player, name);
+    }
+    void RemovePlayer()
+    {
+        Game.RemovePlayer(PlayerState.Player);
+    }
+}

@@ -1,0 +1,67 @@
+﻿@inject ILocalStorageService localStorage
+
+<PageTitle>Blazoscore</PageTitle>
+
+<div class="page">
+    @if (Game == null)
+    {
+        <div>Restoring game...</div>
+    }
+    else
+    {
+        <CascadingBlazoredModal>
+            <CascadingValue Value="@Game">
+                <div class="sidebar">
+                    <NavMenu />
+                </div>
+
+                <main>
+                    <article class="content px-4 h-100">
+                        <ScoresFlexGrid />
+                    </article>
+                </main>
+            </CascadingValue>
+        </CascadingBlazoredModal>
+    }
+</div>
+
+@code {
+    public Game? Game { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        GameState? initialState = null;
+        try
+        {
+            initialState = await localStorage.GetItemAsync<GameState>("game");
+        }
+        catch { }
+
+        if (initialState == null)
+        {
+            initialState = new GameState(new List<PlayerState> {
+                PlayerState.Blank(new("Player 1", "red")),
+                PlayerState.Blank(new("Player 2 with long name", "blue")),
+                PlayerState.Blank(new("Player 3", "orange")),
+            });
+        }
+
+        Game = new(initialState);
+        Game.OnStateChange += GameStateChanged;
+        await base.OnInitializedAsync();
+    }
+
+    public void Dispose()
+    {
+        if (Game == null) return;
+        Game.OnStateChange -= GameStateChanged;
+    }
+
+    public async void GameStateChanged()
+    {
+        if (Game == null) return;
+        StateHasChanged();
+        // if this hurts performance, maybe wait a few seconds after last change
+        await localStorage.SetItemAsync("game", Game.CurrentState);
+    }
+}

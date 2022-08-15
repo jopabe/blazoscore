@@ -1,0 +1,61 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Jox.Blazoscore</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <button type="button" @onclick="AddPlayer">
+                <span class="oi oi-plus" aria-hidden="true"></span> Add Player
+            </button>
+        </div>
+        <div class="nav-item px-3">
+            <button type="button" @onclick="Game.ResetScores">
+                <span class="oi oi-loop-circular" aria-hidden="true"></span> Reset Scores
+            </button>
+        </div>
+        <div class="nav-item px-3">
+            <button type="button" @onclick="Game.Undo" disabled="@(!Game.IsUndoAvailable)">
+                <span class="oi oi-action-undo" aria-hidden="true"></span> Undo
+            </button>
+        </div>
+        <div class="nav-item px-3">
+            <button type="button" @onclick="Game.Redo" disabled="@(!Game.IsRedoAvailable)">
+                <span class="oi oi-action-redo" aria-hidden="true"></span> Redo
+            </button>
+        </div>
+    </nav>
+</div>
+
+@code {
+#nullable disable warnings
+    [CascadingParameter] public Game Game { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+#nullable restore warnings
+
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private async void AddPlayer()
+    {
+        var result = await Modal.Show<NamePlayer>("Add player").Result;
+        if (result.Cancelled) return;
+        var name = result.Data as string;
+        if (string.IsNullOrEmpty(name)) return;
+        Game?.AddPlayer(new Player(name, "black"));
+    }
+
+    protected override void OnInitialized() => Game.OnStateChange += StateHasChanged;
+    public void Dispose() => Game.OnStateChange -= StateHasChanged;
+}
