@@ -7,7 +7,7 @@ else
     <div class="d-flex align-content-stretch flex-wrap h-100">
         @foreach (var playerState in Game.CurrentState.Players)
         {
-            <ScoresFlexGridCell PlayerStateParameter="@playerState" />
+            <ScoresFlexGridCell PlayerState="@playerState" />
         }
     </div>
 }

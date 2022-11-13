@@ -41,14 +41,9 @@
 </div>
 
 @code {
-#nullable disable warnings
-    [CascadingParameter] public Game Game { get; set; }
-    [CascadingParameter] public IModalService Modal { get; set; }
-#nullable restore warnings
-
-    [Parameter]
-    public PlayerState? PlayerStateParameter { get; set; }
-    public PlayerState PlayerState => PlayerStateParameter!;
+    [CascadingParameter] public Game Game { get; set; } = null!;
+    [CascadingParameter] public IModalService Modal { get; set; } = null!;
+    [Parameter, EditorRequired] public PlayerState PlayerState { get; set; } = null!;
 
     private async Task AddScore()
     {
@@ -56,15 +51,15 @@
         if (result.Cancelled) return;
         if (result.Data is not int score) return;
 
-        Game.UpdatePlayerState(PlayerState.AddScore(score));
+        Game.Do(s => s.UpdatePlayer(PlayerState.AddScore(score)));
     }
     private void AddZero()
     {
-        Game.UpdatePlayerState(PlayerState.AddZero());
+        Game.Do(s => s.UpdatePlayer(PlayerState.AddZero()));
     }
     private void RemoveLastScore()
     {
-        Game.UpdatePlayerState(PlayerState.RemoveLastScore());
+        Game.Do(s => s.UpdatePlayer(PlayerState.RemoveLastScore()));
     }
     async Task RenamePlayer()
     {
@@ -74,10 +69,10 @@
         if (result.Cancelled) return;
         var name = result.Data as string;
         if (string.IsNullOrEmpty(name)) return;
-        Game.RenamePlayer(PlayerState.Player, name);
+        Game.Do(s => s.RenamePlayer(PlayerState.Player, name));
     }
     void RemovePlayer()
     {
-        Game.RemovePlayer(PlayerState.Player);
+        Game.Do(s => s.RemovePlayer(PlayerState.Player));
     }
 }

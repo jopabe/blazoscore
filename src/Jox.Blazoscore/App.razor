@@ -9,7 +9,7 @@
     }
     else
     {
-        <CascadingBlazoredModal DisableBackgroundCancel="true">
+        <CascadingBlazoredModal DisableBackgroundCancel="true" FocusFirstElement="true">
             <CascadingValue Value="@Game">
                 <div class="sidebar">
                     <NavMenu />
@@ -35,7 +35,10 @@
         {
             initialState = await localStorage.GetItemAsync<GameState>("game");
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
 
         if (initialState == null)
         {

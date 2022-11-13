@@ -1,7 +1,7 @@
 ﻿<form onsubmit="return false">
     <div class="d-flex flex-nowrap align-items-baseline mb-2">
         <div class="order-2 p-1">
-            <input @bind="Score" type="number" />
+            <input @bind="Score" inputmode="numeric" size="4" />
         </div>
         <div class="order-1 p-1">
             <button type="button" class="btn btn-info float-left" style="float:le" @onclick="() => BumpScore(-10)">
@@ -31,9 +31,7 @@
 </form>
 
 @code {
-    #nullable disable warnings
-    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
-#nullable restore warnings
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; } = null!;
 
     int Score { get; set; }
 

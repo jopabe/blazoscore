@@ -1,9 +1,7 @@
 ﻿namespace Jox.Blazoscore;
 
-public record GameState(IReadOnlyList<PlayerState> Players)
+public record GameState(IReadOnlyList<PlayerState> Players, int StartingScore = 0)
 {
-    public GameState() : this(new List<PlayerState>()) { }
-
     public GameState AddPlayer(PlayerState playerState)
     {
         if (Players.Any(p => p.Player == playerState.Player))
@@ -15,7 +13,7 @@ public record GameState(IReadOnlyList<PlayerState> Players)
             return this with { Players = Players.Append(playerState).ToList() };
         }
     }
-    public GameState AddPlayer(Player player) => AddPlayer(PlayerState.Blank(player));
+    public GameState AddPlayer(Player player) => AddPlayer(PlayerState.Blank(player, StartingScore));
 
     public GameState RemovePlayer(Player player) => this with
     {

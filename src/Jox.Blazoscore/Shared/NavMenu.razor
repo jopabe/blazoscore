@@ -15,17 +15,17 @@
             </button>
         </div>
         <div class="nav-item px-3">
-            <button type="button" @onclick="Game.ResetScores">
+            <button type="button" @onclick="ResetScores">
                 <span class="oi oi-loop-circular" aria-hidden="true"></span> Reset Scores
             </button>
         </div>
         <div class="nav-item px-3">
-            <button type="button" @onclick="Game.Undo" disabled="@(!Game.IsUndoAvailable)">
+            <button type="button" @onclick="_ => Game.UndoFunction.TryUndo()" disabled="@(!Game.UndoFunction.IsUndoAvailable)">
                 <span class="oi oi-action-undo" aria-hidden="true"></span> Undo
             </button>
         </div>
         <div class="nav-item px-3">
-            <button type="button" @onclick="Game.Redo" disabled="@(!Game.IsRedoAvailable)">
+            <button type="button" @onclick="_ => Game.UndoFunction.TryRedo()" disabled="@(!Game.UndoFunction.IsRedoAvailable)">
                 <span class="oi oi-action-redo" aria-hidden="true"></span> Redo
             </button>
         </div>
@@ -33,10 +33,8 @@
 </div>
 
 @code {
-#nullable disable warnings
-    [CascadingParameter] public Game Game { get; set; }
-    [CascadingParameter] public IModalService Modal { get; set; }
-#nullable restore warnings
+    [CascadingParameter] public Game Game { get; set; } = null!;
+    [CascadingParameter] public IModalService Modal { get; set; } = null!;
 
     private bool collapseNavMenu = true;
 
@@ -53,8 +51,10 @@
         if (result.Cancelled) return;
         var name = result.Data as string;
         if (string.IsNullOrEmpty(name)) return;
-        Game?.AddPlayer(new Player(name, "black"));
+        Game.Do(s => s.AddPlayer(new Player(name, "black")));
     }
+
+    private void ResetScores() => Game.Do(s => s.ResetScores());
 
     protected override void OnInitialized() => Game.OnStateChange += StateHasChanged;
     public void Dispose() => Game.OnStateChange -= StateHasChanged;
