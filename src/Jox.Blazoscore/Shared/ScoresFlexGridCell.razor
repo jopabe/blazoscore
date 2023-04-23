@@ -1,33 +1,37 @@
-﻿<div class="flex-fill border border-3 rounded rounded-3 m-1 mb-3 p-3">
+﻿<div class="flex-fill border border-3 rounded rounded-3 m-1 mb-2 p-2 score-box">
+    <div class="player-buttons d-flex flex-column">
+        <button type="button" class="btn btn-light btn-sm text-muted" @onclick="RenamePlayer">
+            <span class="oi oi-pencil"></span>
+        </button>
+        <button type="button" class="btn btn-light btn-sm text-muted my-1" @onclick="RemovePlayer">
+            <span class="oi oi-x"></span>
+        </button>
+    </div>
+    <div class="score-history">
+        <ul>
+            @foreach (var score in PlayerState.Scores.Skip(1))
+            {
+                if (score >= 0)
+                {
+                    <li> + @score</li>
+                }
+                else
+                {
+                    <li> - @(0 - score)</li>
+                }
+            }
+        </ul>
+    </div>
     <div class="position-relative top-50 start-50 translate-middle text-center">
         <div class="d-flex flex-row align-items-center justify-content-center">
             <span class="mx-2"></span>
             <h2 class="mx-2">@PlayerState.Player.Name</h2>
-            <div class="d-flex flex-column">
-                <button type="button" class="btn btn-light btn-sm text-muted" @onclick="RenamePlayer">
-                    <span class="oi oi-pencil"></span>
-                </button>
-                <button type="button" class="btn btn-light btn-sm text-muted my-1" @onclick="RemovePlayer">
-                    <span class="oi oi-x"></span>
-                </button>
-            </div>
         </div>
         <h2>@PlayerState.Scores.Sum()</h2>
         <p>
             @if (PlayerState.Scores[0] > 0)
             {
                 <i>PlayerState.Scores[0]</i>
-            }
-            @foreach (var score in PlayerState.Scores.Skip(1))
-            {
-                if (score >= 0)
-                {
-                    <span> + @score</span>
-                }
-                else
-                {
-                    <span> - @(0 - score)</span>
-                }
             }
         </p>
         <button type="button" class="btn btn-primary btn-lg mx-2" @onclick="() => AddScore()">
