@@ -1,11 +1,17 @@
 ﻿<div class="flex-fill border border-3 rounded rounded-3 m-1 mb-2 p-2 score-box">
-    <div class="player-buttons d-flex flex-column">
-        <button type="button" class="btn btn-light btn-sm text-muted" @onclick="RenamePlayer">
-            <span class="oi oi-pencil"></span>
-        </button>
-        <button type="button" class="btn btn-light btn-sm text-muted my-1" @onclick="RemovePlayer">
-            <span class="oi oi-x"></span>
-        </button>
+    <div class="player-buttons">
+        <ul>
+            <li>
+                <button type="button" class="btn btn-light btn-sm text-muted" @onclick="RenamePlayer">
+                    <span class="oi oi-pencil"></span>
+                </button>
+            </li>
+            <li>
+                <button type="button" class="btn btn-light btn-sm text-muted my-1" @onclick="RemovePlayer">
+                    <span class="oi oi-x"></span>
+                </button>
+            </li>
+        </ul>
     </div>
     <div class="score-history">
         <ul>
